@@ -1,0 +1,28 @@
+cabal-version:   3.4
+name:            xmonad-config
+version:         0.1.0.0
+license:         MIT
+license-file:    LICENSE
+author:          Trouble-Truffle
+maintainer:      perigordtruffle7318@gmail.com
+category:        Config
+build-type:      Simple
+extra-doc-files: CHANGELOG.md
+
+common warnings
+  ghc-options: -Wall -Wcompat
+
+executable xmonad-config
+  import:           warnings
+  main-is:          Main.hs
+  other-extensions:
+    BlockArguments
+    LambdaCase
+
+  build-depends:
+    , base            >=4.15.1.0 && <5
+    , xmonad          >=0.17.1
+    , xmonad-contrib  >=0.17.1
+
+  hs-source-dirs:   app
+  default-language: GHC2021

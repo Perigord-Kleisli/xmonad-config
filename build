@@ -1,0 +1,43 @@
+#!/bin/sh -eu
+
+SRC_DIR=
+EXE_NAME=
+output="$1"
+
+if [ "$SRC_DIR" = "" ]; then
+    # look for the config directory, fall back to the old one
+    SRC_DIR="${XMONAD_CONFIG_DIR:-$HOME/.config/xmonad}"
+    if test -f "$SRC_DIR/build"; then
+        :
+    else
+        SRC_DIR="$HOME/.xmonad"
+    fi
+fi
+
+
+cd "$SRC_DIR"
+
+if [ "$EXE_NAME" = "" ]; then
+    EXE_NAME="$(awk '!done && /^executable / {print $2; done = 1}' ./*.cabal)"
+fi
+
+d="$(dirname "$output")"
+f="$(basename "$output")"
+first=0
+for exe in $EXE_NAME; do
+
+    nix build
+
+    if [ $first = 0 ]; then
+        first=1
+        if [ "$f" = "$exe" ]; then
+            : someone will try it…
+        else
+            ln -sf "$SRC_DIR/result/bin/$exe" "$output"
+        fi
+    elif [ "$f" = "$exe" ]; then
+        # the link above just got replaced with a direct link into the
+        # cabal package
+        echo I hope you know what you\'re doing... >&2
+    fi
+done
