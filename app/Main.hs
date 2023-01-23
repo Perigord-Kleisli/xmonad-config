@@ -9,7 +9,7 @@ import XMonad.Hooks.ManageHelpers (isDialog)
 import XMonad.Hooks.StatusBar.PP ()
 import XMonad.Layout.Magnifier (magnifiercz')
 import XMonad.Layout.ThreeColumns (ThreeCol (ThreeColMid))
-import XMonad.Util.EZConfig (additionalKeys, additionalKeysP, removeKeysP, removeKeys)
+import XMonad.Util.EZConfig (additionalKeys, additionalKeysP, removeKeys, removeKeysP)
 
 import XMonad.Hooks.EwmhDesktops (ewmh, ewmhFullscreen)
 
@@ -26,11 +26,10 @@ myConfig =
     , layoutHook = myLayout -- Use custom layouts
     , manageHook = myManageHook -- Match on certain windows
     }
-    `additionalKeys` [ ((mod4Mask, xK_p), spawn "rofi -show drun")
-                     , ((mod4Mask, xK_Return), spawn "kitty")
-                     , ((mod4Mask .|. shiftMask, xK_C), kill)
-                     ]
-    `removeKeys` [(mod4Mask .|. shiftMask, xK_Return)]
+    `additionalKeysP` [ ("M-p", spawn "rofi -show drun")
+                      , ("M-<Return>", spawn "kitty")
+                      , ("M-S-c", kill)
+                      ]
 
 myManageHook :: ManageHook
 myManageHook =
