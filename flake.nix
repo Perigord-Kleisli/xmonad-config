@@ -13,16 +13,17 @@
       overlays = [
         haskellNix.overlay
         (final: prev: {
-          xmonad-config = final.haskell-nix.project' {
+          xmonad-config = final.haskell-nix.project' rec {
             src = ./.;
+            index-state = "2023-01-21T20:07:39Z";
             compiler-nix-name = "ghc925";
             shell.tools = {
-              cabal = {};
-              cabal-fmt = {};
-              hlint = {};
-              implicit-hie = {};
-              haskell-language-server = {};
-              fast-tags = {};
+              cabal = {inherit index-state;};
+              cabal-fmt = {inherit index-state;};
+              hlint = {inherit index-state;};
+              implicit-hie = {inherit index-state;};
+              haskell-language-server = {inherit index-state;};
+              fast-tags = {inherit index-state;};
             };
             shell.buildInputs = with pkgs; [
               nixpkgs-fmt
@@ -30,6 +31,15 @@
             modules = [
               {
                 packages.X11.components.library.libs = pkgs.lib.mkForce (with pkgs.xorg; [libX11 libXrandr libXext libXScrnSaver libXinerama]);
+                packages.pango.components.library = {
+                  doHaddock = false;
+                  libs = pkgs.lib.mkForce (with pkgs; [pango glib pkg-config]);
+                };
+                packages.glib.components.library = {
+                  doHaddock = false;
+                  libs = pkgs.lib.mkForce (with pkgs; [glib pkg-config]);
+                };
+                packages.taffybar.components.library.libs = pkgs.lib.mkForce (with pkgs; [gtk4]);
               }
             ];
           };
@@ -46,6 +56,8 @@
       flake
       // {
         packages.default = flake.packages."xmonad-config:exe:xmonad-config";
+        packages.xmonad-config = flake.packages."xmonad-config:exe:xmonad-config";
+        packages.xmobar-config = flake.packages."xmonad-config:exe:xmobar-config";
       });
   nixConfig = {
     extra-substituters = ["https://cache.iog.io"];

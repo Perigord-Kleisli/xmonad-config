@@ -1,43 +1,61 @@
-#!/bin/sh -eu
+#!/usr/bin/env bash
+# shellcheck disable=2155
 
-SRC_DIR=
-EXE_NAME=
-output="$1"
+cd "$HOME/.config/xmonad" || exit
 
-if [ "$SRC_DIR" = "" ]; then
-    # look for the config directory, fall back to the old one
-    SRC_DIR="${XMONAD_CONFIG_DIR:-$HOME/.config/xmonad}"
-    if test -f "$SRC_DIR/build"; then
-        :
-    else
-        SRC_DIR="$HOME/.xmonad"
-    fi
-fi
+mapfile -t files < <(awk '/.*path: ".\/wm/{print substr($3,2,length($3)-2)}' "./hie.yaml" )
+mapfile -t prevsums < "./.shasum-xmonad"
+files+=("./xmonad-config.cabal" "./flake.nix")
 
-
-cd "$SRC_DIR"
-
-if [ "$EXE_NAME" = "" ]; then
-    EXE_NAME="$(awk '!done && /^executable / {print $2; done = 1}' ./*.cabal)"
-fi
-
-d="$(dirname "$output")"
-f="$(basename "$output")"
-first=0
-for exe in $EXE_NAME; do
-
-    nix build
-
-    if [ $first = 0 ]; then
-        first=1
-        if [ "$f" = "$exe" ]; then
-            : someone will try it…
-        else
-            ln -sf "$SRC_DIR/result/bin/$exe" "$output"
-        fi
-    elif [ "$f" = "$exe" ]; then
-        # the link above just got replaced with a direct link into the
-        # cabal package
-        echo I hope you know what you\'re doing... >&2
+allMatching=true
+for (( i=0; i<${#files[@]}; i++)); do
+    files[$i]=$(sha256sum "${files[$i]}")
+    if [ "${files[$i]}" != "${prevsums[$i]}" ]; then
+        echo "Changed File: '${files[$i]}' to '${prevsums[$i]}'"
+        allMatching=false
     fi
 done
+
+if ! $allMatching; then
+    echo "Rebuilding XMonad"
+    rm "./.shasum-xmonad"
+    for i in "${files[@]}"; do
+        echo "$i" >> "./.shasum-xmonad"
+    done
+    nix build ".#xmonad-config"
+    EXE_NAME="$(realpath result)/bin/xmonad-config"
+
+    output="$1"
+    if [ -n "$*" ]; then
+        ln -sf "$EXE_NAME" "$output"
+    fi
+fi
+
+files=()
+prevsums=()
+
+mapfile -t files < <(gen-hie | awk '/.*path: ".\/bar/{print substr($3,2,length($3)-2)}' "./hie.yaml")
+mapfile -t prevsums < "./.shasum-xmobar"
+files+=("./xmonad-config.cabal" "./flake.nix")
+
+allMatching=true
+for (( i=0; i<${#files[@]}; i++)); do
+    files[$i]=$(sha256sum "${files[$i]}")
+    if [ "${files[$i]}" != "${prevsums[$i]}" ]; then
+        echo "Changed File: '${files[$i]}' to '${prevsums[$i]}'"
+        allMatching=false
+    fi
+done
+
+if ! $allMatching; then
+    echo "Rebuilding XMobar"
+    rm "./.shasum-xmobar"
+    for i in "${files[@]}"; do
+        echo "$i" >> "./.shasum-xmobar"
+    done
+    nix build ".#xmobar-config"
+    EXE_NAME="$(realpath result)/bin/xmobar-config"
+
+    rm -f ./xmobar
+    cp "$EXE_NAME" ./xmobar
+fi
