@@ -35,7 +35,10 @@ myConfig =
     }
     `additionalKeysP` [ ("M-p", spawn "rofi -show drun"),
                         ("M-S-s", spawn "flameshot gui"),
-                        ("M-S-x", kill)
+                        ("M-S-x", kill),
+                        ("<XF86AudioLowerVolume>", spawn "amixer -q sset Master 3%-"),
+                        ("<XF86AudioRaiseVolume>", spawn "amixer -q sset Master 3%+"),
+                        ("<XF86AudioMute>", spawn "amixer -q sset Master toggle")
                       ]
 
 myManageHook :: ManageHook
