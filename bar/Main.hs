@@ -61,7 +61,7 @@ config =
         , Run $ Swap [] 10
         , Run $ Com "uname" ["-s", "-r"] "" 36000
         , Run $ Date "%a %b %_d %Y %H:%M:%S" "date" 10
-        , Run HelloWorld
+        , Run $ BatteryP ["BAT0"] ["-t", "<acstatus><watts> (<left>%)", "-L", "10", "-H", "80", "-p", "3", "--", "-O", "<fc=green>On</fc> - ", "-i", "", "-L", "-15", "-H", "-5", "-l", "red", "-m", "blue", "-h", "green", "-a", "notify-send -u critical 'Battery running out!!'", "-A", "3"] 600
         , Run XMonadLog
         ]
     , sepChar = "%"

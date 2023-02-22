@@ -2,59 +2,7 @@
 
 cd "$HOME/.config/xmonad" || exit
 
-mapfile -t files < <(awk '/.*path: ".\/wm/{print substr($3,2,length($3)-2)}' "./hie.yaml" )
-mapfile -t prevsums < "./.shasum-xmonad"
-files+=("./xmonad-config.cabal" "./flake.nix")
-
-allMatching=true
-for (( i=0; i<${#files[@]}; i++)); do
-    files[$i]=$(sha256sum "${files[$i]}")
-    if [ "${files[$i]}" != "${prevsums[$i]}" ]; then
-        echo "Changed File: '${files[$i]}' to '${prevsums[$i]}'"
-        allMatching=false
-    fi
-done
-
-if ! $allMatching; then
-    echo "Rebuilding XMonad"
-    rm "./.shasum-xmonad"
-    for i in "${files[@]}"; do
-        echo "$i" >> "./.shasum-xmonad"
-    done
-    nix build ".#xmonad-config"
-    EXE_NAME="$(realpath result)/bin/xmonad-config"
-
-    output="$1"
-    if [ -n "$*" ]; then
-        ln -sf "$EXE_NAME" "$output"
-    fi
-fi
-
-files=()
-prevsums=()
-
-mapfile -t files < <(gen-hie | awk '/.*path: ".\/bar/{print substr($3,2,length($3)-2)}' "./hie.yaml")
-mapfile -t prevsums < "./.shasum-xmobar"
-files+=("./xmonad-config.cabal" "./flake.nix")
-
-allMatching=true
-for (( i=0; i<${#files[@]}; i++)); do
-    files[$i]=$(sha256sum "${files[$i]}")
-    if [ "${files[$i]}" != "${prevsums[$i]}" ]; then
-        echo "Changed File: '${files[$i]}' to '${prevsums[$i]}'"
-        allMatching=false
-    fi
-done
-
-if ! $allMatching; then
-    echo "Rebuilding XMobar"
-    rm "./.shasum-xmobar"
-    for i in "${files[@]}"; do
-        echo "$i" >> "./.shasum-xmobar"
-    done
-    nix build ".#xmobar-config"
-    EXE_NAME="$(realpath result)/bin/xmobar-config"
-
-    rm -f ./xmobar
-    cp "$EXE_NAME" ./xmobar
-fi
+cabal install --enable-executable-stripping \
+              --enable-optimization=2 \
+              --overwrite-policy=always \
+              --installdir="$(dirname "$1")"

@@ -16,7 +16,7 @@ import XMonad.Util.Loggers (logTitles)
 
 main :: IO ()
 main = do
-  xmobar' <- getUserConfigFile "xmonad" "xmobar"
+  xmobar' <- getUserCacheFile "xmonad" "xmobar"
   xmonad
     . ewmhFullscreen
     . ewmh

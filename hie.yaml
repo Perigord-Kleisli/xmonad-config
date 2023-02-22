@@ -1,7 +1,0 @@
-cradle:
-  cabal:
-    - path: "./wm/Main.hs"
-      component: "xmonad-config:exe:xmonad-config"
-
-    - path: "./bar/Main.hs"
-      component: "xmonad-config:exe:xmobar-config"

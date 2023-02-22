@@ -9,7 +9,7 @@ category:        Config
 build-type:      Simple
 extra-doc-files: CHANGELOG.md
 
-executable xmonad-config
+executable xmonad-x86_64-linux
   main-is:          Main.hs
   other-extensions:
     BlockArguments
@@ -30,7 +30,7 @@ executable xmonad-config
   hs-source-dirs:   wm
   default-language: GHC2021
 
-executable xmobar-config
+executable xmobar
   main-is:          Main.hs
   other-extensions:
     BlockArguments
