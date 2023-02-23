@@ -66,7 +66,7 @@ config =
         ]
     , sepChar = "%"
     , alignSep = "}{"
-    , template = "%XMonadLog% | %cpu% | %memory% * %swap% }{ <fc=#ee9a00>%date%</fc> | %uname%"
+    , template = "%XMonadLog% | %cpu% | %memory% * %swap% }{ <fc=#ee9a00>%date%</fc> | %battery% | %uname%"
     }
 
 main :: IO ()
