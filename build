@@ -1,8 +1,7 @@
-#!/usr/bin/env bash
-
-cd "$HOME/.config/xmonad" || exit
-
-cabal install --enable-executable-stripping \
-              --enable-optimization=2 \
-              --overwrite-policy=always \
-              --installdir="$(dirname "$1")"
+#!/bin/sh
+if [ "$(command -v cabal)" != "" ]; then
+  cabal install --enable-executable-stripping \
+                --enable-optimization=2 \
+                --overwrite-policy=always \
+                --installdir="$(dirname "$1")"
+fi
