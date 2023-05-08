@@ -30,3 +30,5 @@ dist-newstyle
 ./.shasum-xmonad
 xmobar
 dist-newstyle
+dist-newstyle
+.shasum-xmonad
