@@ -41,7 +41,9 @@ executable taffybar
   build-depends:
     , base          >=4.15.1.0 && <5
     , data-default  >=0.7
+    , gi-gtk        >=3.0.39
     , taffybar      >=4.0
+    , transformers  >=0.5.6.2
 
   ghc-options:
     -Wall -Wcompat -rtsopts -with-rtsopts=-V0 -threaded -Widentities
