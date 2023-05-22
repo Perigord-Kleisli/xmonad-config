@@ -23,7 +23,6 @@
               hlint = {inherit index-state;};
               implicit-hie = {inherit index-state;};
               haskell-language-server = {inherit index-state;};
-              fast-tags = {inherit index-state;};
             };
             shell.buildInputs = with pkgs; [
               nixpkgs-fmt

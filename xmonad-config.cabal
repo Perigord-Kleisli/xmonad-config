@@ -17,6 +17,8 @@ executable xmonad-x86_64-linux
 
   build-depends:
     , base            >=4.15.1.0 && <5
+    , containers      >=0.6.5
+    , taffybar        >=4.0
     , xdg-basedir     >=0.2.2
     , xmonad          >=0.17.1
     , xmonad-contrib  >=0.17.1
@@ -30,19 +32,20 @@ executable xmonad-x86_64-linux
   hs-source-dirs:   wm
   default-language: GHC2021
 
-executable xmobar
+executable taffybar
   main-is:          Main.hs
   other-extensions:
     BlockArguments
     LambdaCase
 
   build-depends:
-    , base    >=4.15.1.0 && <5
-    , xmobar  >=0.46
+    , base          >=4.15.1.0 && <5
+    , data-default  >=0.7
+    , taffybar      >=4.0
 
   ghc-options:
-    -Wall -Wcompat -rtsopts -with-rtsopts=-V0 -threaded
-    -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns
+    -Wall -Wcompat -rtsopts -with-rtsopts=-V0 -threaded -Widentities
+    -Wincomplete-record-updates -Wincomplete-uni-patterns
     -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields
     -Wredundant-constraints
 
