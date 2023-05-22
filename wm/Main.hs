@@ -1,28 +1,50 @@
-{-# LANGUAGE LambdaCase #-}
 {-# OPTIONS_GHC -Wno-missing-signatures #-}
 
 module Main (main) where
 
+import qualified Data.Map as M
 import System.Environment.XDG.BaseDir
 import XMonad
 import XMonad.Hooks.EwmhDesktops (ewmh, ewmhFullscreen)
-import XMonad.Hooks.ManageDocks (avoidStruts)
+import XMonad.Hooks.ManageDocks (AvoidStruts, avoidStruts, docks, ToggleStruts(..))
 import XMonad.Hooks.ManageHelpers
-import XMonad.Hooks.StatusBar (defToggleStrutsKey, statusBarProp, withEasySB)
-import XMonad.Hooks.StatusBar.PP
+import XMonad.Hooks.StatusBar (defToggleStrutsKey, statusBarGeneric, withEasySB)
+import XMonad.Hooks.TaffybarPagerHints (pagerHints)
+import XMonad.Layout.Decoration
 import XMonad.Layout.Magnifier (magnifiercz')
-import XMonad.Layout.NoBorders (Ambiguity (OnlyFloat, OtherIndicated), lessBorders, noBorders)
+import XMonad.Layout.NoBorders
 import XMonad.Layout.ThreeColumns (ThreeCol (ThreeColMid))
 import XMonad.Util.EZConfig (additionalKeysP)
-import XMonad.Util.Loggers (logTitles)
+
+withStrutsKey :: LayoutClass l Window => (XConfig Layout -> (KeyMask, KeySym)) -> XConfig l -> XConfig (ModifiedLayout AvoidStruts l)
+withStrutsKey key conf =
+  conf
+    { layoutHook = avoidStruts (layoutHook conf)
+    , keys = (<>) <$> keys' <*> keys conf
+    }
+ where
+  k' conf' = case key conf' of
+    (0, 0) ->
+      -- This usually means the user passed 'def' for the keybinding
+      -- function, and is otherwise meaningless to harmful depending on
+      -- whether 383ffb7 has been applied to xmonad or not. So do what
+      -- they probably intend.
+      --
+      -- A user who wants no keybinding function should probably use
+      -- 'withSB' instead, especially since NoSymbol didn't do anything
+      -- sane before 383ffb7. ++bsa
+      defToggleStrutsKey conf'
+    key' -> key'
+  keys' = (`M.singleton` sendMessage ToggleStruts) . k'
 
 main :: IO ()
 main = do
-  xmobar' <- getUserCacheFile "xmonad" "xmobar"
   xmonad
     . ewmhFullscreen
     . ewmh
-    . withEasySB (statusBarProp xmobar' (pure myXmobarPP)) defToggleStrutsKey
+    . docks
+    . withStrutsKey defToggleStrutsKey
+    . pagerHints
     $ myConfig
 
 myConfig =
@@ -56,32 +78,3 @@ myLayout = tiled ||| Mirror tiled ||| noBorders Full ||| threeCol
   nmaster = 1 -- Default number of windows in the master pane
   ratio = 1 / 2 -- Default proportion of screen occupied by master pane
   delta = 3 / 100 -- Percent of screen to increment by when resizing panes
-
-myXmobarPP :: PP
-myXmobarPP =
-  def
-    { ppSep = magenta " • "
-    , ppTitleSanitize = xmobarStrip
-    , ppCurrent = wrap " " "" . xmobarBorder "Top" "#8be9fd" 2
-    , ppHidden = white . wrap " " ""
-    , ppHiddenNoWindows = lowWhite . wrap " " ""
-    , ppUrgent = red . wrap (yellow "!") (yellow "!")
-    , ppOrder = \case [ws, l, _, wins] -> [ws, l, wins]; _ -> undefined
-    , ppExtras = [logTitles formatFocused formatUnfocused]
-    }
- where
-  formatFocused = wrap (white "[") (white "]") . magenta . ppWindow
-  formatUnfocused = wrap (lowWhite "[") (lowWhite "]") . blue . ppWindow
-
--- \| Windows should have *some* title, which should not not exceed a
--- sane length.
-ppWindow :: String -> String
-ppWindow = xmobarRaw . (\w -> if null w then "untitled" else w) . shorten 30
-
-blue, lowWhite, magenta, red, white, yellow :: String -> String
-magenta = xmobarColor "#ff79c6" ""
-blue = xmobarColor "#bd93f9" ""
-white = xmobarColor "#f8f8f2" ""
-yellow = xmobarColor "#f1fa8c" ""
-red = xmobarColor "#ff5555" ""
-lowWhite = xmobarColor "#bbbbbb" ""
