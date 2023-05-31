@@ -2,26 +2,47 @@
 
 module Main (main) where
 
-import System.Environment.XDG.BaseDir
+import Data.Map qualified as M
 import XMonad
 import XMonad.Hooks.EwmhDesktops (ewmh, ewmhFullscreen)
-import XMonad.Hooks.ManageDocks (avoidStruts, docks)
+import XMonad.Hooks.ManageDocks (AvoidStruts, ToggleStruts (..), avoidStruts, docks)
 import XMonad.Hooks.ManageHelpers
-import XMonad.Hooks.StatusBar (defToggleStrutsKey, statusBarGeneric, withEasySB)
+import XMonad.Hooks.StatusBar (defToggleStrutsKey)
 import XMonad.Hooks.TaffybarPagerHints (pagerHints)
+import XMonad.Layout.Decoration
 import XMonad.Layout.Magnifier (magnifiercz')
 import XMonad.Layout.NoBorders
 import XMonad.Layout.ThreeColumns (ThreeCol (ThreeColMid))
 import XMonad.Util.EZConfig (additionalKeysP)
 
+withStrutsKey :: LayoutClass l Window => (XConfig Layout -> (KeyMask, KeySym)) -> XConfig l -> XConfig (ModifiedLayout AvoidStruts l)
+withStrutsKey key conf =
+  conf
+    { layoutHook = avoidStruts (layoutHook conf)
+    , keys = (<>) <$> keys' <*> keys conf
+    }
+ where
+  k' conf' = case key conf' of
+    (0, 0) ->
+      -- This usually means the user passed 'def' for the keybinding
+      -- function, and is otherwise meaningless to harmful depending on
+      -- whether 383ffb7 has been applied to xmonad or not. So do what
+      -- they probably intend.
+      --
+      -- A user who wants no keybinding function should probably use
+      -- 'withSB' instead, especially since NoSymbol didn't do anything
+      -- sane before 383ffb7. ++bsa
+      defToggleStrutsKey conf'
+    key' -> key'
+  keys' = (`M.singleton` sendMessage ToggleStruts) . k'
+
 main :: IO ()
-main = do 
-  taffyBarPath <- getUserCacheFile "xmonad" "taffybar"
+main = do
   xmonad
     . ewmhFullscreen
     . ewmh
     . docks
-    . withEasySB (statusBarGeneric taffyBarPath mempty) defToggleStrutsKey
+    . withStrutsKey defToggleStrutsKey
     . pagerHints
     $ myConfig
 
