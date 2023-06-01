@@ -30,6 +30,15 @@
             modules = [
               {
                 packages.X11.components.library.libs = pkgs.lib.mkForce (with pkgs.xorg; [libX11 libXrandr libXext libXScrnSaver libXinerama]);
+                packages.gi-gtk-hs.components.library = {
+                  doHaddock = false;
+                };
+                packages.gi-gtk.components.library = {
+                  doHaddock = false;
+                };
+                packages.taffybar.components.library = {
+                  doHaddock = false;
+                };
                 packages.pango.components.library = {
                   doHaddock = false;
                   libs = pkgs.lib.mkForce (with pkgs; [pango glib pkg-config]);
