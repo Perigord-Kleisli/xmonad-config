@@ -1,8 +1,9 @@
 {-# OPTIONS_GHC -Wno-missing-signatures #-}
+{-# LANGUAGE QuasiQuotes #-}
 
 module Main (main) where
 
-import System.Environment.XDG.BaseDir (getUserCacheFile)
+import System.Environment.XDG.BaseDir (getUserCacheFile, getUserConfigDir)
 import XMonad
 import XMonad.Actions.WindowMenu (windowMenu)
 import XMonad.Hooks.EwmhDesktops (ewmh, ewmhFullscreen)
@@ -16,9 +17,35 @@ import XMonad.Layout.Spacing
 import XMonad.Layout.ThreeColumns (ThreeCol (ThreeColMid))
 import XMonad.Util.EZConfig (additionalKeysP)
 
+import PyF
+
 main :: IO ()
 main = do
   taffyBarPath <- getUserCacheFile "xmonad" "taffybar"
+  config_home <- getUserConfigDir "xmonad"
+  rofi_scripts <- (<> "/rofi-scripts") <$> getUserConfigDir "xmonad"
+
+  let myConfig =
+        def
+          { modMask = mod4Mask -- Rebind Mod to the Super key
+          , layoutHook =
+              smartSpacingWithEdge 4
+                . lessBorders OtherIndicated
+                $ avoidStruts myLayout -- Use custom layouts
+          , manageHook = myManageHook
+          , terminal = "kitty"
+          , focusedBorderColor = "#5277C3"
+          , normalBorderColor = "#636363"
+          }
+          `additionalKeysP` [ ("M-p", spawn [fmt|rofi -show drun -theme {rofi_scripts}/launcher-style.rasi|])
+                            , ("M-S-p", spawn [fmt|rofi -show run -theme {rofi_scripts}/launcher-style.rasi|])
+                            , ("M-C-q", spawn [fmt|CONFIG_HOME={config_home} {rofi_scripts}/powermenu/powermenu.bash|])
+                            , ("M-S-s", spawn "flameshot gui")
+                            , ("M-S-x", kill)
+                            , ("<XF86AudioLowerVolume>", spawn "amixer -q sset Master 3%-")
+                            , ("<XF86AudioRaiseVolume>", spawn "amixer -q sset Master 3%+")
+                            , ("<XF86AudioMute>", spawn "amixer -q sset Master toggle")
+                            ]
   xmonad
     . ewmhFullscreen
     . ewmh
@@ -26,27 +53,6 @@ main = do
     . withEasySB (statusBarGeneric taffyBarPath mempty) defToggleStrutsKey
     . pagerHints
     $ myConfig
-
-myConfig =
-  def
-    { modMask = mod4Mask -- Rebind Mod to the Super key
-    , layoutHook =
-        smartSpacingWithEdge 4
-          . lessBorders OtherIndicated
-          $ avoidStruts myLayout -- Use custom layouts
-    , manageHook = myManageHook
-    , terminal = "kitty"
-    , focusedBorderColor = "#9496FF"
-    , normalBorderColor = "#636363"
-    }
-    `additionalKeysP` [ ("M-p", spawn "rofi -show drun")
-                      , ("M-o", windowMenu)
-                      , ("M-S-s", spawn "flameshot gui")
-                      , ("M-S-x", kill)
-                      , ("<XF86AudioLowerVolume>", spawn "amixer -q sset Master 3%-")
-                      , ("<XF86AudioRaiseVolume>", spawn "amixer -q sset Master 3%+")
-                      , ("<XF86AudioMute>", spawn "amixer -q sset Master toggle")
-                      ]
 
 myManageHook :: ManageHook
 myManageHook =

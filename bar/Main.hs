@@ -130,7 +130,7 @@ myClock =
     textClockNewWith
       defaultClockConfig
         { clockUpdateStrategy = RoundedTargetInterval 60 0.0
-        , clockFormatString = "\61463  %H:%M   \61555  %d/%m/%y"
+        , clockFormatString = "\61463  %I:%M %p \61555  %d/%m/%y"
         }
 
 myTray =

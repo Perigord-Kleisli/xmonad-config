@@ -14,6 +14,8 @@ executable xmonad-x86_64-linux
   other-extensions:
     BlockArguments
     LambdaCase
+    TemplateHaskell
+    QuasiQuotes
 
   build-depends:
     , base            >=4.15.1.0 && <5
@@ -22,6 +24,7 @@ executable xmonad-x86_64-linux
     , xdg-basedir     >=0.2.2
     , xmonad          >=0.17.1
     , xmonad-contrib  >=0.17.1
+    , PyF
 
   ghc-options:
     -Wall -Wcompat -rtsopts -with-rtsopts=-V0 -threaded -O2
