@@ -31,7 +31,7 @@ main = do
     laptopEndWidgets = myBattery ++ baseEndWidgets
     simpleTaffyConfig =
       defaultSimpleTaffyConfig
-        { startWidgets = [myWorkspaces, myLayout]
+        { startWidgets = [myWorkspaces]
         , centerWidgets = [myClock]
         , barPosition = Top
         , widgetSpacing = 0
@@ -107,10 +107,6 @@ myMem =
 myNet =
   deocrateWithSetClassAndBoxes "net" $
     networkGraphNew netCfg Nothing
-
-myLayout =
-  deocrateWithSetClassAndBoxes "layout" $
-    layoutNew defaultLayoutConfig
 
 myWorkspaces =
   flip widgetSetClassGI "workspaces"
