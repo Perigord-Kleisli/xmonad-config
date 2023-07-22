@@ -39,7 +39,7 @@ main = do
           }
           `additionalKeysP` [ ("M-p", spawn [fmt|rofi -show drun -theme {rofi_scripts}/launcher-style.rasi|])
                             , ("M-S-p", spawn [fmt|rofi -show run -theme {rofi_scripts}/launcher-style.rasi|])
-                            , ("M-C-q", spawn [fmt|CONFIG_HOME={config_home} {rofi_scripts}/powermenu/powermenu.bash|])
+                            , ("M-S-q", spawn [fmt|CONFIG_HOME={config_home} {rofi_scripts}/powermenu/powermenu.bash|])
                             , ("M-S-s", spawn "flameshot gui")
                             , ("M-S-x", kill)
                             , ("<XF86AudioLowerVolume>", spawn "amixer -q sset Master 3%-")
