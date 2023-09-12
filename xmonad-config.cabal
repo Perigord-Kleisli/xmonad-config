@@ -16,6 +16,8 @@ executable xmonad-x86_64-linux
     LambdaCase
     TemplateHaskell
     QuasiQuotes
+    PatternSynonyms
+    BlockArguments
 
   build-depends:
     , base            >=4.15.1.0 && <5
@@ -24,6 +26,10 @@ executable xmonad-x86_64-linux
     , xdg-basedir     >=0.2.2
     , xmonad          >=0.17.1
     , xmonad-contrib  >=0.17.1
+    , unix
+    , xmonad-extras
+    , sdl2-mixer
+    , process
     , PyF
 
   ghc-options:

@@ -24,21 +24,19 @@ import System.Taffybar.Widget.Generic.PollingGraph
 main :: IO ()
 main = do
   enableLogger "Graphics.UI.GIGtkStrut" DEBUG
-  cssFiles <- getUserConfigFile "taffybar" "taffybar.css"
+  cssFiles <- getUserConfigFile "xmonad" "data/taffybar.css"
 
   let
-    baseEndWidgets = [myTray, myNet, myMem, myCPU, myMpris]
-    laptopEndWidgets = myBattery ++ baseEndWidgets
     simpleTaffyConfig =
       defaultSimpleTaffyConfig
         { startWidgets = [myWorkspaces]
         , centerWidgets = [myClock]
         , barPosition = Top
         , widgetSpacing = 0
-        , barPadding = 0
+        , barPadding = 10
         , barHeight = ScreenRatio (1 / 24)
         , cssPaths = [cssFiles]
-        , endWidgets = laptopEndWidgets
+        , endWidgets = [myBattery, myTray, myNet, myMem, myCPU, myMpris]
         }
 
   startTaffybar $
@@ -118,7 +116,7 @@ myWorkspaces =
               getWindowIconPixbufFromChrome
                 <|||> unscaledDefaultGetWindowIconPixbuf
                 <|||> (\size _ -> lift $ loadPixbufByName size "application-default-icon")
-        , widgetGap = 0
+        , widgetGap = 1
         , showWorkspaceFn = hideEmpty
         , updateRateLimitMicroseconds = 100000
         , labelSetter = const (pure " ")
@@ -130,7 +128,7 @@ myClock =
     textClockNewWith
       defaultClockConfig
         { clockUpdateStrategy = RoundedTargetInterval 60 0.0
-        , clockFormatString = "\61463  %I:%M %p \61555  %d/%m/%y"
+        , clockFormatString = "\61463 %I:%M %p \61555 %d/%m/%y"
         }
 
 myTray =
@@ -148,12 +146,11 @@ myMpris =
       , updatePlayerWidget =
           simplePlayerWidget
             defaultPlayerConfig
-              { setNowPlayingLabel = playingText 10 10
+              { setNowPlayingLabel = playingText 20 20
               }
       }
 
 myBattery =
-  [ deocrateWithSetClassAndBoxes "battery" $
-      makeCombinedWidget
-        [batteryIconNew, textBatteryNew "$percentage$%"]
-  ]
+  deocrateWithSetClassAndBoxes "battery" $
+    makeCombinedWidget
+      [batteryIconNew, textBatteryNew "$percentage$%"]

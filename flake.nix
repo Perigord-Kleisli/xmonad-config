@@ -37,8 +37,14 @@
           #   shower.source = inputs.shower;
           # };
           settings = {
+            alsa-core = {
+              extraBuildDepends = with pkgs; [alsa-lib];
+            };
             X11 = {
               extraBuildDepends = with pkgs.xorg; [libX11 libXrandr libXext libXScrnSaver libXinerama];
+            };
+            sdl2-mixer = {
+              extraBuildDepends = with pkgs; [SDL2_mixer];
             };
             pango = {
               haddock = false;

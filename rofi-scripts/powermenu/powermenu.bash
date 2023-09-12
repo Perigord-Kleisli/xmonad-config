@@ -6,7 +6,7 @@
 ## Rofi   : Power Menu
 
 
-uptime="$(uptime | awk '{print $1}')"
+uptime="$(uptime | tr "," " " | cut -f6-8 -d" ")"
 
 # Options
 shutdown=''
@@ -53,7 +53,13 @@ run_cmd() {
         elif [[ $1 == '--suspend' ]]; then
             systemctl suspend
         elif [[ $1 == '--logout' ]]; then
-            kill "$(pidof "xmonad-x86_64-linux")"
+            kitty sh -c "$DESKTOP_SESSION"
+            if [[ "$(basename $DESKTOP_SESSION)" == 'none+xmonad' ]]; then
+                for i in $(pidof "xmonad-x86_64-linux"); do kill -kill $i; done
+            elif [[ "$(basename $DESKTOP_SESSION)" == 'hyprland' ]]; then
+                kill "$(pidof "Hyprland")"
+            fi
+            echo -n "logout"
         fi
     else
         exit 0

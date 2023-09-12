@@ -22,7 +22,7 @@ configuration {
 
 /*****----- Global Properties -----*****/
 * {
-    font:                        "JetBrainsMono Nerd Font 11";
+    font:                        "Noto Sans 13";
     background:                  Black/80%;
     background-alt:              Black/80%;
     foreground:                  White/90%;
@@ -107,7 +107,7 @@ entry {
 /*****----- Mode Switcher -----*****/
 mode-switcher{
     enabled:                     true;
-    spacing:                     20px;
+    spacing:                     10px;
     background-color:            transparent;
     text-color:                  @foreground;
 }
