@@ -21,7 +21,7 @@ no=''
 rofi_cmd() {
     rofi -dmenu \
         -p "Goodbye" \
-        -mesg "Uptime: $(echo $uptime | awk -F':' '{print $1}') hours, $(echo $uptime | awk -F':' '{print $2}') minutes, and $(echo $uptime | awk -F':' '{print $3}') seconds" \
+        -mesg "Uptime: $(echo $uptime | awk -F':' '{print $1}') hours and $(echo $uptime | awk -F':' '{print $2}') minutes" \
         -theme "$CONFIG_HOME/rofi-scripts/powermenu/style.rasi"
 }
 

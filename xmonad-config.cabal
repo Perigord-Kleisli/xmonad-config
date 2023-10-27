@@ -28,7 +28,6 @@ executable xmonad-x86_64-linux
     , xmonad-contrib  >=0.17.1
     , unix
     , xmonad-extras
-    , sdl2-mixer
     , process
     , PyF
 

@@ -22,6 +22,7 @@ import Control.Monad
 import PyF
 import XMonad.Actions.Volume
 import XMonad.Util.Brightness qualified as Brightness
+import XMonad.Hooks.SetWMName (setWMName)
 
 main :: IO ()
 main = do
@@ -40,6 +41,7 @@ main = do
           , focusedBorderColor = "#5277C3"
           , normalBorderColor = "#636363"
           , startupHook = do
+              setWMName "LG3D"
               spawn [fmt|feh --no-fehbg --bg-fill {config_home}/data/background.png|]
           }
           `additionalKeysP` [ ("M-p", spawn [fmt|rofi -show drun -theme {rofi_scripts}/launcher-style.rasi|])
@@ -58,8 +60,7 @@ main = do
                               )
                             ,
                               ( "<XF86AudioMute>"
-                              , do
-                                  void toggleMute
+                              , void toggleMute
                               )
                             ]
   xmonad
