@@ -23,6 +23,7 @@ import PyF
 import XMonad.Actions.Volume
 import XMonad.Util.Brightness qualified as Brightness
 import XMonad.Hooks.SetWMName (setWMName)
+import XMonad.Layout.Gaps (gaps)
 
 main :: IO ()
 main = do
@@ -33,7 +34,7 @@ main = do
         def
           { modMask = mod4Mask -- Rebind Mod to the Super key
           , layoutHook =
-              spacingWithEdge 4
+              smartSpacingWithEdge 4
                 . lessBorders OtherIndicated
                 $ avoidStruts myLayout -- Use custom layouts
           , manageHook = myManageHook

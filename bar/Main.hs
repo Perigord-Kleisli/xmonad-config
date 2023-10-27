@@ -13,6 +13,7 @@ import StatusNotifier.Tray
 import System.Environment.XDG.BaseDir
 import System.Log.Logger
 import System.Taffybar
+import System.Taffybar.Context (TaffyIO)
 import System.Taffybar.DBus
 import System.Taffybar.Information.CPU
 import System.Taffybar.Information.Memory
@@ -20,6 +21,7 @@ import System.Taffybar.SimpleConfig
 import System.Taffybar.Util
 import System.Taffybar.Widget
 import System.Taffybar.Widget.Generic.PollingGraph
+import Data.Text (pack)
 
 main :: IO ()
 main = do
@@ -36,7 +38,7 @@ main = do
         , barPadding = 10
         , barHeight = ScreenRatio (1 / 24)
         , cssPaths = [cssFiles]
-        , endWidgets = [myBattery, myTray, myNet, myMem, myCPU, myMpris]
+        , endWidgets = [myBattery, myTray, myNet, myMem, myCPU, myMpris, myNotifications]
         }
 
   startTaffybar $
@@ -45,13 +47,26 @@ main = do
         withToggleServer $
           toTaffyConfig simpleTaffyConfig
 
+myNotifications :: TaffyIO Gtk.Widget
+myNotifications =
+  notifyAreaNew
+    ( NotificationConfig
+        { notificationMaxTimeout = Just 10
+        , notificationMaxLength = 10
+        , notificationFormatter = pack . show
+        }
+    )
+
+myVolume :: TaffyIO Gtk.Widget
+myVolume = undefined
+
 setClassAndBoundingBoxes ::
-  MonadIO m => Data.Text.Text -> Gtk.Widget -> m Gtk.Widget
+  (MonadIO m) => Data.Text.Text -> Gtk.Widget -> m Gtk.Widget
 setClassAndBoundingBoxes klass =
   buildContentsBox >=> flip widgetSetClassGI klass
 
 deocrateWithSetClassAndBoxes ::
-  MonadIO m => Data.Text.Text -> m Gtk.Widget -> m Gtk.Widget
+  (MonadIO m) => Data.Text.Text -> m Gtk.Widget -> m Gtk.Widget
 deocrateWithSetClassAndBoxes klass builder =
   builder >>= setClassAndBoundingBoxes klass
 
@@ -139,6 +154,7 @@ myTray =
         , trayLeftClickAction = Activate
         }
 
+myMpris :: TaffyIO Gtk.Widget
 myMpris =
   mpris2NewWithConfig
     MPRIS2Config
