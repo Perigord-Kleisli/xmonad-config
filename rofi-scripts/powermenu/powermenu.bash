@@ -27,9 +27,15 @@ rofi_cmd() {
 
 # Confirmation CMD
 confirm_cmd() {
-    rofi -dmenu \
-        -p "Are you sure you want to $1?" \
-        -theme "$CONFIG_HOME/rofi-scripts/powermenu/confirm.rasi"
+    if [ "$1" == "suspend" ]; then
+        rofi -dmenu \
+            -p "Are you sure you want to hibernate?" \
+            -theme "$CONFIG_HOME/rofi-scripts/powermenu/confirm.rasi"
+    else
+        rofi -dmenu \
+            -p "Are you sure you want to $1?" \
+            -theme "$CONFIG_HOME/rofi-scripts/powermenu/confirm.rasi"
+    fi
 }
 
 # Ask for confirmation
@@ -51,7 +57,7 @@ run_cmd() {
         elif [[ $1 == '--reboot' ]]; then
             systemctl reboot
         elif [[ $1 == '--suspend' ]]; then
-            systemctl suspend
+            systemctl hibernate
         elif [[ $1 == '--logout' ]]; then
             kitty sh -c "$DESKTOP_SESSION"
             if [[ "$(basename $DESKTOP_SESSION)" == 'none+xmonad' ]]; then
